@@ -29,6 +29,7 @@ data Options' = Options' {
       , port :: Int
       , queue :: String
       , path :: String
+      , separator :: String
       , ipOpt :: IPOpt
       , paramNames :: [TL.Text]
       } deriving Show
@@ -39,6 +40,12 @@ options' = Options'
     <*> argument auto (metavar "PORT")
     <*> strArgument (metavar "QUEUE" <> help "Redis queue name")
     <*> strArgument (metavar "PATH" <> help "HTTP PATH for POST request")
+    <*> strOption (
+             short 'F'
+          <> metavar "separator"
+          <> help "Separator character for queue message fields. Default TAB"
+          <> value "\t"
+          )
     <*> pIpOpt
     <*> some (
           TL.pack <$> strArgument (metavar "PARAM-NAME" <> help "Post param field name")
@@ -74,10 +81,10 @@ main = do
       time <- liftIO $ fmap (formatTime defaultTimeLocale "%FT%X%z") 
                        getCurrentTime
       let message = mconcat 
-                        $ intersperse " " 
+                        $ intersperse (B8.pack separator)
                         $ xs <> [ip , B8.pack time] 
       if debug 
-        then liftIO $ print message
+        then liftIO . putStrLn . B8.unpack $ message
         else do
             liftIO $ R.lpush redisConn queue (BL8.fromChunks [message])
             return ()
