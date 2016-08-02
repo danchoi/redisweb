@@ -22,8 +22,8 @@ data Options' = Options' {
         port :: Int
       , queue :: String
       , path :: String
-      , paramNames :: [String]
-      } 
+      , paramNames :: [TL.Text]
+      } deriving Show
 
 options' :: Parser Options'
 options' = Options' 
@@ -31,7 +31,7 @@ options' = Options'
     <*> strArgument (metavar "QUEUE" <> help "Redis queue name")
     <*> strArgument (metavar "PATH" <> help "HTTP PATH for POST request")
     <*> many (
-          strArgument (metavar "PARAM-NAME" <> help "Post param field name")
+          TL.pack <$> strArgument (metavar "PARAM-NAME" <> help "Post param field name")
         )
 
 
@@ -41,7 +41,9 @@ opts = info (helper <*> options')
 
 main :: IO ()
 main = do
-  Options'{..} <- execParser opts
+  o@Options'{..} <- execParser opts
+  print o
+
   redisConn <- R.connect R.localhost R.defaultPort
   app <- scottyApp $ do
     get (capture path) $ do
@@ -49,7 +51,7 @@ main = do
       headers  <- requestHeaders <$> request
       let ip :: B8.ByteString
           ip = fromMaybe "127.0.0.1" $ lookup "X-Real-IP" headers
-      xs <- mapM param (map TL.pack paramNames)
+      xs <- mapM param paramNames
       time <- liftIO $ fmap (formatTime defaultTimeLocale "%FT%X%z") 
                        getCurrentTime
       let message = mconcat 
