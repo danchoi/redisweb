@@ -13,13 +13,16 @@ import Network.Wai.Handler.Warp (run)
 import Data.Time.Format
 import Data.Time.Clock
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad (when)
 import Control.Applicative
 import Data.Monoid
 import Data.List (intersperse)
 import Data.Maybe
+import System.IO
 
 data Options' = Options' {
-        port :: Int
+        verbose :: Bool
+      , port :: Int
       , queue :: String
       , path :: String
       , paramNames :: [TL.Text]
@@ -27,7 +30,8 @@ data Options' = Options' {
 
 options' :: Parser Options'
 options' = Options' 
-    <$> argument auto (metavar "PORT")
+    <$> flag False True (short 'v' <> help "Verbose: output parsed options.")
+    <*> argument auto (metavar "PORT")
     <*> strArgument (metavar "QUEUE" <> help "Redis queue name")
     <*> strArgument (metavar "PATH" <> help "HTTP PATH for POST request")
     <*> many (
@@ -42,7 +46,7 @@ opts = info (helper <*> options')
 main :: IO ()
 main = do
   o@Options'{..} <- execParser opts
-  print o
+  when verbose $ hPutStrLn stderr $ show o
 
   redisConn <- R.connect R.localhost R.defaultPort
   app <- scottyApp $ do
