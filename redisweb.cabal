@@ -26,4 +26,5 @@ executable redisweb
                      , warp
                      , transformers
                      , time >= 1.5.0.1
+                     , case-insensitive
 
