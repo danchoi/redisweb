@@ -38,10 +38,8 @@ options' = Options'
           TL.pack <$> strArgument (metavar "PARAM-NAME" <> help "Post param field name")
         )
 
-
 opts :: ParserInfo Options'
-opts = info (helper <*> options') 
-            (fullDesc <> header "redisweb")
+opts = info (helper <*> options') (fullDesc <> header "redisweb")
 
 main :: IO ()
 main = do
