@@ -22,4 +22,8 @@ executable redisweb
                      , bytestring
                      , text
                      , scotty
+                     , wai
+                     , warp
+                     , transformers
+                     , time >= 1.5.0.1
 
