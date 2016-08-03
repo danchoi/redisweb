@@ -26,17 +26,18 @@ data IPOpt = RemoteHost | IPHeader String
 
 data Options' = Options' {
         debug :: Bool
+      , ipOpt :: IPOpt
       , port :: Int
       , queue :: String
       , path :: String
       , separator :: String
-      , ipOpt :: IPOpt
       , paramNames :: [TL.Text]
       } deriving Show
 
 options' :: Parser Options'
 options' = Options' 
     <$> flag False True (short 'v' <> help "Debug mode")
+    <*> pIpOpt
     <*> argument auto (metavar "PORT")
     <*> strArgument (metavar "QUEUE" <> help "Redis queue name")
     <*> strArgument (metavar "PATH" <> help "HTTP PATH for POST request")
@@ -46,7 +47,6 @@ options' = Options'
           <> help "Separator character for queue message fields. Default TAB"
           <> value "\t"
           )
-    <*> pIpOpt
     <*> some (
           TL.pack <$> strArgument (metavar "PARAM-NAME" <> help "Post param field name")
         )
