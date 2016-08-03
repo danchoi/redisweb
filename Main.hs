@@ -70,7 +70,6 @@ main = do
   redisConn <- R.connect R.localhost R.defaultPort
   app <- scottyApp $ do
     post (capture path) $ do
-      liftIO $ print "test"
       headers  <- requestHeaders <$> request
       ip :: B8.ByteString <- case ipOpt of
                   RemoteHost -> (B8.pack . show . remoteHost) <$> request
