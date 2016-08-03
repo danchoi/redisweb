@@ -54,7 +54,7 @@ options' = Options'
 pIpOpt :: Parser IPOpt
 pIpOpt = 
   (IPHeader <$> 
-      (strOption (short 'h' <> metavar "IP-HEADER-NAME" 
+      (strOption (short 'H' <> metavar "IP-HEADER-NAME" 
             <> help "Request header with IP address to log. E.g. X-Real-IP. Default is to use REMOTE-HOST")))
   <|> pure RemoteHost
 
