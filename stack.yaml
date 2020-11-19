@@ -9,7 +9,7 @@ packages:
 
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps: 
-- redis-0.14.1
+- redis-0.14.2@sha256:246b7286193379d23ac40797d97a129521bad67941c292f118e0fcc6b212f106,3252
 
 # Override default flag values for local packages and extra-deps
 flags: {}
